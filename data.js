@@ -1,0 +1,147 @@
+const STUDY_SPOTS = [
+  {
+    id: "sk_basement",
+    name: "SK미래관 지하",
+    building: "SK미래관",
+    location: "지하 1층",
+    coords: { x: 470, y: 510 },
+    outlets: "많음 (대부분의 좌석에 구비)",
+    hours: "24시간 운영 (시험 기간 연장)",
+    noise: "보통 (잔잔한 백색소음, 타이핑 가능)",
+    congestion: "보통",
+    tags: ["콘센트 많음", "24시간", "오픈데스크", "타이핑 가능"],
+    description: "지하 특유의 아늑함과 함께 넓은 테이블이 배치되어 있어 노트북 작업과 필기 공부를 동시에 하기 좋습니다. 환기 시스템이 잘 갖춰져 있어 쾌적합니다.",
+    bgGradient: "linear-gradient(135deg, #2c3e50, #3498db)"
+  },
+  {
+    id: "sk_cafe_lounge",
+    name: "SK미래관 3층 카페 및 라운지",
+    building: "SK미래관",
+    location: "3층",
+    coords: { x: 490, y: 500 },
+    outlets: "보통 (벽면 및 라운지 테이블 일부)",
+    hours: "09:00 ~ 21:00",
+    noise: "조금 있음 (카페 소음, 캐주얼한 대화 가능)",
+    congestion: "혼잡",
+    tags: ["음료 취식", "노트북 가능", "소통 공간", "테라스 인접"],
+    description: "음료를 마시며 편안한 분위기에서 공부할 수 있는 공간입니다. 카페와 라운지가 결합되어 협업이나 가벼운 퀴즈 공부에 적합합니다.",
+    bgGradient: "linear-gradient(135deg, #e67e22, #f39c12)"
+  },
+  {
+    id: "sk_lounge_4_5",
+    name: "SK미래관 4층, 5층 라운지",
+    building: "SK미래관",
+    location: "4층 및 5층",
+    coords: { x: 475, y: 490 },
+    outlets: "많음 (개인 좌석마다 배치)",
+    hours: "09:00 ~ 22:00",
+    noise: "조용함 (노트북 타이핑 가능 구역 분리)",
+    congestion: "여유",
+    tags: ["전망 좋음", "콘센트 많음", "쾌적함", "집중 구역"],
+    description: "통유리창을 통해 캠퍼스 전경을 내려다보며 공부할 수 있는 최고 인기 구역입니다. 1인석과 다인석이 조화롭게 배치되어 있습니다.",
+    bgGradient: "linear-gradient(135deg, #16a085, #1abc9c)"
+  },
+  {
+    id: "sk_carrel",
+    name: "SK미래관 캐럴",
+    building: "SK미래관",
+    location: "2층 ~ 5층 (개인 캐럴 구역)",
+    coords: { x: 495, y: 515 },
+    outlets: "매우 많음 (1인당 독립 콘센트 및 조명)",
+    hours: "예약제 (09:00 ~ 22:00)",
+    noise: "매우 조용함 (독서실 수준, 대화 절대 금지)",
+    congestion: "혼잡 (예약 필수)",
+    tags: ["독립 공간", "예약제", "집중 최고", "콘센트 필수"],
+    description: "고려대 모바일 앱을 통해 예약하여 사용하는 독립형 1인 집중 부스입니다. 시험기간 외부 소음과 완벽히 차단되어 초집중 상태를 유지할 수 있습니다.",
+    bgGradient: "linear-gradient(135deg, #8e44ad, #9b59b6)"
+  },
+  {
+    id: "west_hall_reading",
+    name: "서관 1층 열람실",
+    building: "서관 (인문관)",
+    location: "1층",
+    coords: { x: 410, y: 400 },
+    outlets: "보통 (중앙 테이블 위주)",
+    hours: "08:30 ~ 22:00",
+    noise: "매우 조용함 (책장 넘기는 소리만 나는 분위기)",
+    congestion: "보통",
+    tags: ["역사와 전통", "조용함", "클래식", "집중 집중"],
+    description: "인문대생들의 안식처인 서관 1층에 위치한 고풍스러운 분위기의 열람실입니다. 클래식하고 차분한 목재 인테리어로 집중력이 샘솟는 곳입니다.",
+    bgGradient: "linear-gradient(135deg, #7f8c8d, #95a5a6)"
+  },
+  {
+    id: "intl_2",
+    name: "국제관 2층 오픈 라운지",
+    building: "국제관",
+    location: "2층 로비 및 복도 라운지",
+    coords: { x: 310, y: 350 },
+    outlets: "보통 (라운지 테이블 기둥 주변)",
+    hours: "09:00 ~ 22:00",
+    noise: "보통 (유학생 대화 및 가벼운 소음)",
+    congestion: "여유",
+    tags: ["개방형", "글로벌 분위기", "편안한 소파", "채광 우수"],
+    description: "국제관 특유의 글로벌하고 열린 분위기를 만끽할 수 있는 곳입니다. 채광이 매우 좋아 낮에 기분 전환을 하며 가벼운 스터디를 하기 좋습니다.",
+    bgGradient: "linear-gradient(135deg, #2980b9, #2980b9)"
+  },
+  {
+    id: "intl_3_4",
+    name: "국제관 3층, 4층 스터디룸 및 라운지",
+    building: "국제관",
+    location: "3층 및 4층",
+    coords: { x: 300, y: 330 },
+    outlets: "많음 (창가 바 테이블 및 벽면)",
+    hours: "09:00 ~ 21:00",
+    noise: "조용함 (집중 개인 스터디 위주)",
+    congestion: "여유",
+    tags: ["창가 개인석", "노트북 용이", "조용한 집중"],
+    description: "3층과 4층 창가에 배치된 바 테이블 좌석은 개인 노트북 작업에 안성맞춤입니다. 지나다니는 사람이 적어 차분하게 공부할 수 있습니다.",
+    bgGradient: "linear-gradient(135deg, #27ae60, #2ecc71)"
+  },
+  {
+    id: "central_ccl",
+    name: "중앙지하 CCL (CJ Creator Library)",
+    building: "중앙광장 (지하)",
+    location: "지하 1층 중앙광장 내부",
+    coords: { x: 580, y: 480 },
+    outlets: "매우 많음 (모든 소파 및 스튜디오 구역)",
+    hours: "09:00 ~ 22:00",
+    noise: "보통 (자유로운 토론, 크리에이터 감성)",
+    congestion: "혼잡",
+    tags: ["협업 공간", "소파석", "스터디룸", "멀티미디어"],
+    description: "자유롭게 누워서 공부할 수 있는 소파와 계단식 좌석, 그리고 예약을 통해 협업할 수 있는 스터디룸 및 스튜디오가 완비된 크리에이티브 공간입니다.",
+    bgGradient: "linear-gradient(135deg, #d35400, #e67e22)"
+  },
+  {
+    id: "centennial",
+    name: "백주년 기념관 C-Lounge",
+    building: "백주년 기념관",
+    location: "1층 및 3층 로비 라운지",
+    coords: { x: 730, y: 420 },
+    outlets: "많음 (스터디 테이블 및 기둥)",
+    hours: "08:00 ~ 23:00",
+    noise: "보통 (도서관 출입 소음 및 적당한 백색소음)",
+    congestion: "혼잡",
+    tags: ["최첨단", "학구열", "넓은 공간", "접근성 최고"],
+    description: "최신식 설비와 쾌적한 에어컨/난방이 제공되는 백주년 기념관의 오픈 라운지입니다. 넓은 개방감 속에서 자극을 받으며 공부하기 좋습니다.",
+    bgGradient: "linear-gradient(135deg, #c0392b, #e74c3c)"
+  },
+  {
+    id: "central_library",
+    name: "중앙도서관 열람실",
+    building: "중앙도서관",
+    location: "1층 ~ 4층 일반열람실",
+    coords: { x: 750, y: 270 },
+    outlets: "보통 (열람실 좌석 번호별 상이)",
+    hours: "09:00 ~ 22:00",
+    noise: "매우 조용함 (기침 소리도 조심스러운 집중실)",
+    congestion: "혼잡",
+    tags: ["09~22시", "전통 공부방", "초집중", "조용함"],
+    description: "시험기간 고대생들의 심장과도 같은 곳입니다. 압도적인 학업 열기를 느끼며 딴짓하지 않고 오직 전공 서적과 시험에 몰두하기에 최고의 장소입니다.",
+    bgGradient: "linear-gradient(135deg, #34495e, #2c3e50)"
+  }
+];
+
+// Browser/Node.js 호환성 처리
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = STUDY_SPOTS;
+}

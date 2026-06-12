@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>고대로 앉아 | 고려대 캠퍼스 공부 명당 & 타이머</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="고려대학교 문과 캠퍼스의 숨겨진 공부 명당 추천 및 실시간 길 안내, 집중을 돕는 공부 타이머와 허용 앱 설정 서비스 '고대로 앉아'입니다.">
+  <meta name="keywords" content="고려대, 고려대학교, 공부명당, 고대로앉아, 타이머, 공부타이머, 문과캠퍼스, SK미래관, 중앙도서관">
+  <meta name="author" content="고대로 앉아 개발팀">
+  
+  <!-- FontAwesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  
+  <!-- BACKGROUND ANIMATED ORBS -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- HEADER (Visible when logged in) -->
+    <header id="main-header" class="hidden">
+      <div class="logo">
+        <span class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+        <span class="logo-text">고대로 <span class="accent">앉아</span></span>
+      </div>
+      
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-target="view-map" id="tab-map">
+          <i class="fa-solid fa-map-location-dot"></i> <span>공부 명당</span>
+        </button>
+        <button class="nav-btn" data-target="view-app-setup" id="tab-app-setup">
+          <i class="fa-solid fa-mobile-screen-button"></i> <span>집중 설정</span>
+        </button>
+        <button class="nav-btn" data-target="view-timer" id="tab-timer">
+          <i class="fa-solid fa-stopwatch"></i> <span>타이머</span>
+        </button>
+        <button class="nav-btn" data-target="view-stats" id="tab-stats">
+          <i class="fa-solid fa-chart-line"></i> <span>학습 통계</span>
+        </button>
+      </nav>
+
+      <div class="user-profile">
+        <div class="user-info">
+          <i class="fa-solid fa-circle-user profile-avatar"></i>
+          <span id="user-display-name">고대생</span>님
+        </div>
+        <button id="btn-logout" class="icon-btn-text" title="로그아웃">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN VIEWS WRAPPER -->
+    <main class="views-wrapper">
+      
+      <!-- 1. LOGIN VIEW -->
+      <section id="view-login" class="view-section active">
+        <div class="login-card glass-panel">
+          <div class="login-header">
+            <div class="brand-badge">고대로 앉아</div>
+            <h1>반갑습니다, 고대인 여러분!</h1>
+            <p>고려대학교 문과캠퍼스 공부 명당 추천 및 타이머 서비스</p>
+          </div>
+          
+          <div class="auth-toggle">
+            <button id="toggle-login" class="auth-tab active">로그인</button>
+            <button id="toggle-register" class="auth-tab">회원가입</button>
+          </div>
+
+          <form id="auth-form" class="auth-form">
+            <div class="input-group" id="group-name" style="display: none;">
+              <label for="reg-name"><i class="fa-regular fa-user"></i> 이름 (닉네임)</label>
+              <input type="text" id="reg-name" placeholder="닉네임을 입력하세요">
+            </div>
+            
+            <div class="input-group">
+              <label for="auth-id"><i class="fa-regular fa-envelope"></i> 아이디 또는 포탈 이메일</label>
+              <input type="text" id="auth-id" required placeholder="portal_id 또는 이메일">
+            </div>
+            
+            <div class="input-group">
+              <label for="auth-pw"><i class="fa-solid fa-lock"></i> 비밀번호</label>
+              <input type="password" id="auth-pw" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" id="btn-auth-submit" class="btn btn-primary btn-block">로그인</button>
+          </form>
+          
+          <div class="login-footer">
+            <p><i class="fa-solid fa-circle-info"></i> 별도의 백엔드 없이 브라우저 로컬 저장소에 안전하게 저장됩니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. MAP & STUDY SPOTS VIEW -->
+      <section id="view-map" class="view-section hidden">
+        <div class="map-layout">
+          
+          <!-- LEFT SIDEBAR: SPOT LIST -->
+          <aside class="map-sidebar glass-panel">
+            <div class="sidebar-header">
+              <h2><i class="fa-solid fa-list-ol"></i> 명당 리스트 <span class="spot-count" id="spot-count-badge">10</span></h2>
+              <p>원하는 장소를 선택하면 위치를 안내합니다.</p>
+            </div>
+            <div class="spot-search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="search-spot-input" placeholder="건물명 또는 위치 검색...">
+            </div>
+            <div class="spot-list-container" id="spot-list">
+              <!-- Dynamically populated spots -->
+            </div>
+          </aside>
+
+          <!-- CENTER: INTERACTIVE SVG MAP -->
+          <div class="map-viewport glass-panel">
+            <div class="map-header">
+              <span class="map-title-badge"><i class="fa-solid fa-map"></i> 고려대학교 인문계 캠퍼스 지도</span>
+              <div class="map-legend">
+                <span class="legend-item"><i class="fa-solid fa-location-dot" style="color: var(--color-primary-light);"></i> 공부 명당</span>
+              </div>
+            </div>
+            
+            <div class="svg-container" id="svg-map-wrapper">
+              <!-- Custom Interactive Campus Map -->
+              <svg id="campus-map" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- Labeled Campus Map Image -->
+                <image href="campus_map.png" x="0" y="0" width="1000" height="700" />
+                
+                <!-- Dynamic Pin Markers Container -->
+                <g id="map-pins-container">
+                  <!-- Generated dynamically in JS based on coordinates -->
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- RIGHT DETAIL PANEL: PLACE CARD -->
+          <div class="map-detail-panel glass-panel hidden" id="spot-detail-panel">
+            <button class="close-panel-btn" id="btn-close-detail"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="detail-header" id="detail-header-bg">
+              <span class="detail-badge" id="detail-building-name">SK미래관</span>
+              <h3 id="detail-spot-name">SK미래관 지하</h3>
+            </div>
+            
+            <div class="detail-body">
+              <div class="congestion-container">
+                <span class="detail-meta-label">실시간 혼잡도</span>
+                <div class="congestion-status-wrapper">
+                  <span class="congestion-badge" id="detail-congestion">보통</span>
+                  <button class="refresh-congestion-btn" id="btn-refresh-congestion" title="혼잡도 새로고침">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <p class="detail-desc" id="detail-desc">지하 특유의 아늑함과 함께 넓은 테이블이 배치되어 있어 노트북 작업과 필기 공부를 동시에 하기 좋습니다.</p>
+              
+              <hr class="divider">
+              
+              <div class="detail-info-list">
+                <div class="info-item">
+                  <div class="info-icon"><i class="fa-solid fa-plug"></i></div>
+                  <div class="info-content">
+                    <span class="info-title">콘센트 구비</span>
+                    <span class="info-value" id="detail-outlets">많음 (대부분 좌석)</span>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon"><i class="fa-regular fa-clock"></i></div>
+                  <div class="info-content">
+                    <span class="info-title">이용 가능 시간</span>
+                    <span class="info-value" id="detail-hours">24시간 운영</span>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon"><i class="fa-solid fa-volume-high"></i></div>
+                  <div class="info-content">
+                    <span class="info-title">소음 및 분위기</span>
+                    <span class="info-value" id="detail-noise">잔잔한 소음 (노트북 가능)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-tags" id="detail-tags-container">
+                <!-- Badges -->
+              </div>
+              
+              <button class="btn btn-crimson btn-block" id="btn-start-here">
+                <i class="fa-solid fa-stopwatch-20"></i> 이 자리에서 공부 시작
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 3. ALLOWED APP SETUP VIEW -->
+      <section id="view-app-setup" class="view-section hidden">
+        <div class="app-setup-layout glass-panel">
+          <div class="setup-header">
+            <div class="setup-badge"><i class="fa-solid fa-ban"></i> 집중 방해 차단</div>
+            <h2>공부할 동안 허용할 앱을 선택해주세요</h2>
+            <p>공부 타이머가 작동하는 동안 선택한 앱 외의 다른 앱 알림 및 사용이 시뮬레이션 환경에서 제한됩니다.</p>
+          </div>
+
+          <div class="apps-grid" id="apps-list">
+            <!-- Dynamically populated system apps -->
+          </div>
+
+          <div class="setup-footer">
+            <div class="selected-summary">
+              <span id="selected-apps-count">0</span>개의 앱 사용 허용됨
+            </div>
+            <button class="btn btn-primary btn-large" id="btn-save-apps">
+              <i class="fa-solid fa-chevron-right"></i> 설정 완료 및 타이머로 이동
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. TIMER VIEW -->
+      <section id="view-timer" class="view-section hidden">
+        <div class="timer-layout">
+          
+          <!-- LEFT: ACTIVE SPOT CARD -->
+          <div class="timer-sidebar glass-panel">
+            <div class="active-spot-card">
+              <h3><i class="fa-solid fa-location-dot"></i> 선택된 공부 장소</h3>
+              <div class="spot-card-detail" id="timer-spot-card">
+                <p class="no-spot-selected-msg">지도를 클릭하여 공부할 명당을 먼저 지정해 보세요.</p>
+              </div>
+            </div>
+
+            <div class="allowed-apps-card">
+              <h3><i class="fa-solid fa-mobile-screen"></i> 집중 허용 앱 리스트</h3>
+              <div class="allowed-apps-chips" id="timer-allowed-apps-list">
+                <!-- Allowed apps list -->
+              </div>
+              <button class="btn btn-secondary btn-sm btn-block" id="btn-edit-apps-from-timer">
+                <i class="fa-solid fa-pen"></i> 허용 앱 변경
+              </button>
+            </div>
+          </div>
+
+          <!-- CENTER: PRECISE TIMER & WHITE NOISE -->
+          <div class="timer-main glass-panel">
+            
+            <!-- FOCUS MODE OVERLAY (Simulated block) -->
+            <div class="focus-overlay hidden" id="focus-overlay-screen">
+              <div class="focus-overlay-content">
+                <div class="lock-animation"><i class="fa-solid fa-lock"></i></div>
+                <h2>집중 모드 작동 중!</h2>
+                <p>허용되지 않은 앱(SNS, 유튜브 등)을 실행할 수 없습니다.</p>
+                <div class="unauthorized-warning" id="unauthorized-toast">
+                  <i class="fa-solid fa-circle-exclamation"></i> 경고: 허용되지 않은 앱 접근 감지됨!
+                </div>
+                <div class="simulated-notification">
+                  <div class="notif-header">
+                    <span><i class="fa-solid fa-comment"></i> 카카오톡 알림</span>
+                    <span>방금 전</span>
+                  </div>
+                  <div class="notif-body">
+                    "오늘 저녁 뭐 먹을래?"
+                  </div>
+                  <div class="notif-blocked">필터링됨 - 집중 모드 종료 후 확인 가능</div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btn-close-focus-overlay" style="margin-top: 20px;">
+                  <i class="fa-solid fa-rotate-left"></i> 공부 화면으로 돌아가기
+                </button>
+              </div>
+            </div>
+
+            <!-- THE TIMER DISPLAY -->
+            <div class="timer-display-container">
+              
+              <!-- Circular Progress bar SVG -->
+              <div class="timer-circle-wrapper">
+                <svg class="timer-circle-svg" viewBox="0 0 200 200">
+                  <circle class="timer-track" cx="100" cy="100" r="90"></circle>
+                  <circle class="timer-progress" id="timer-progress-ring" cx="100" cy="100" r="90"></circle>
+                </svg>
+                <div class="timer-text-overlay">
+                  <div class="session-label" id="session-status-text">집중 공부 시간</div>
+                  <div class="time-digits" id="timer-digits">00:00:00</div>
+                  <div class="mode-badge" id="focus-active-badge"><i class="fa-solid fa-shield-halved"></i> FOCUS</div>
+                </div>
+              </div>
+
+              <!-- Controls -->
+              <div class="timer-controls">
+                <button class="btn btn-circle btn-primary btn-lg" id="btn-timer-toggle" title="시작 / 일시정지">
+                  <i class="fa-solid fa-play" id="timer-toggle-icon"></i>
+                </button>
+                <button class="btn btn-circle btn-danger" id="btn-timer-stop" title="공부 완료" disabled>
+                  <i class="fa-solid fa-square"></i>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- WHITE NOISE PLAYER PANEL -->
+            <div class="ambient-player glass-panel">
+              <h4><i class="fa-solid fa-headphones"></i> 공부 집중용 백색 소음 테마</h4>
+              <div class="ambient-tracks">
+                <button class="ambient-track-btn" data-sound="rain">
+                  <i class="fa-solid fa-cloud-showers-heavy"></i> <span>빗소리</span>
+                </button>
+                <button class="ambient-track-btn" data-sound="cafe">
+                  <i class="fa-solid fa-mug-saucer"></i> <span>도서관 카페</span>
+                </button>
+                <button class="ambient-track-btn" data-sound="lofi">
+                  <i class="fa-solid fa-music"></i> <span>Lo-Fi 비트</span>
+                </button>
+              </div>
+              <div class="audio-control-bar">
+                <span id="ambient-status">정지됨</span>
+                <input type="range" id="ambient-volume" min="0" max="1" step="0.1" value="0.5" title="볼륨 조절">
+              </div>
+            </div>
+
+            <!-- 비허용 앱 테스트 버튼 -->
+            <button class="btn btn-secondary btn-sm" id="btn-simulate-unauthorized" style="margin-top: 15px; border-color: rgba(231, 76, 60, 0.3); color: var(--color-danger); width: 100%; max-width: 480px;">
+              <i class="fa-solid fa-mobile-screen-button"></i> 비허용 앱 실행 시도 (차단 시뮬레이션)
+            </button>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 5. STATISTICS & ACCOUNT VIEW -->
+      <section id="view-stats" class="view-section hidden">
+        <div class="stats-layout">
+          
+          <!-- LEFT PROFILE CARD -->
+          <div class="stats-sidebar glass-panel">
+            <div class="stats-profile-card">
+              <div class="profile-badge-crown" id="badge-icon"><i class="fa-solid fa-award"></i></div>
+              <h3 id="profile-name">이수민</h3>
+              <span class="user-tier-badge" id="profile-tier">학사 (새싹 학습자)</span>
+              
+              <div class="stats-grid-mini">
+                <div class="mini-stat-box">
+                  <span class="mini-label">누적 집중 시간</span>
+                  <span class="mini-val" id="stat-total-time">00:00:00</span>
+                </div>
+                <div class="mini-stat-box">
+                  <span class="mini-label">공부 횟수</span>
+                  <span class="mini-val" id="stat-session-count">0회</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACHIEVEMENTS list -->
+            <div class="achievements-card">
+              <h3><i class="fa-solid fa-trophy"></i> 획득 업적</h3>
+              <div class="achievements-list" id="achievements-list">
+                <!-- Badges dynamically added -->
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT STATS PANELS -->
+          <div class="stats-main glass-panel">
+            <div class="stats-header">
+              <h2><i class="fa-solid fa-chart-column"></i> 공부 분석 보고서</h2>
+              <p>주간 공부 추이와 장소별 집중 시간 분석 차트입니다.</p>
+            </div>
+
+            <div class="stats-charts-row">
+              <div class="chart-container-box">
+                <h4><i class="fa-solid fa-calendar-day"></i> 일별 누적 집중 시간</h4>
+                <canvas id="weeklyChart"></canvas>
+              </div>
+              <div class="chart-container-box">
+                <h4><i class="fa-solid fa-chart-pie"></i> 장소별 공부 선호도</h4>
+                <canvas id="spotsChart"></canvas>
+              </div>
+            </div>
+
+            <!-- SESSION HISTORY TABLE -->
+            <div class="history-card">
+              <h3><i class="fa-solid fa-clock-rotate-left"></i> 최근 학습 기록</h3>
+              <div class="table-container">
+                <table class="history-table">
+                  <thead>
+                    <tr>
+                      <th>날짜</th>
+                      <th>장소</th>
+                      <th>집중 시간</th>
+                      <th>상태</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stats-history-tbody">
+                    <!-- Session history records -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>&copy; 2026 고대로 앉아. All Rights Reserved. 고려대학교 SW프로그래밍의기초 프로젝트</p>
+    </footer>
+
+  </div>
+
+  <!-- POPUP TOAST NOTIFICATIONS -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- WEBAUDIO BACKENDS FOR SYNTHESIZED WHITE NOISE (No external file dependencies!) -->
+  <script>
+    // Web Audio Synthesizers for local playback without downloading large MP3 assets
+    class FocusAudioSynthesizer {
+      constructor() {
+        this.ctx = null;
+        this.noiseNode = null;
+        this.filterNode = null;
+        this.oscNode = null;
+        this.gainNode = null;
+        this.playingType = null;
+      }
+      
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      setVolume(val) {
+        if (this.gainNode) {
+          this.gainNode.gain.setValueAtTime(val, this.ctx.currentTime);
+        }
+      }
+
+      play(type, volume = 0.5) {
+        this.init();
+        this.stop();
+        
+        this.playingType = type;
+        this.gainNode = this.ctx.createGain();
+        this.gainNode.gain.setValueAtTime(volume, this.ctx.currentTime);
+        
+        // 1. Generate White Noise Buffer
+        const bufferSize = 2 * this.ctx.sampleRate;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        
+        this.noiseNode = this.ctx.createBufferSource();
+        this.noiseNode.buffer = noiseBuffer;
+        this.noiseNode.loop = true;
+
+        // 2. Create filter for different themes
+        this.filterNode = this.ctx.createBiquadFilter();
+        
+        if (type === 'rain') {
+          // Rain: Lowpass + Bandpass to simulate water droplets
+          this.filterNode.type = 'lowpass';
+          this.filterNode.frequency.setValueAtTime(600, this.ctx.currentTime);
+          
+          this.noiseNode.connect(this.filterNode);
+          this.filterNode.connect(this.gainNode);
+          this.gainNode.connect(this.ctx.destination);
+          this.noiseNode.start();
+          
+          // Periodic rumble/patter
+          this.patterInterval = setInterval(() => {
+            if (this.filterNode) {
+              const baseFreq = 500 + Math.random() * 300;
+              this.filterNode.frequency.exponentialRampToValueAtTime(baseFreq, this.ctx.currentTime + 0.5);
+            }
+          }, 800);
+        } 
+        else if (type === 'cafe') {
+          // Library Cafe: Pink-noise filtered hum + random high frequency murmurs
+          this.filterNode.type = 'bandpass';
+          this.filterNode.frequency.setValueAtTime(300, this.ctx.currentTime);
+          this.filterNode.Q.setValueAtTime(1.0, this.ctx.currentTime);
+          
+          this.noiseNode.connect(this.filterNode);
+          this.filterNode.connect(this.gainNode);
+          this.gainNode.connect(this.ctx.destination);
+          this.noiseNode.start();
+
+          // Simulating soft coffee cup clinks (short high-pitch sine waves)
+          this.clinkInterval = setInterval(() => {
+            if (this.ctx && this.gainNode) {
+              const clinkOsc = this.ctx.createOscillator();
+              const clinkGain = this.ctx.createGain();
+              
+              clinkOsc.type = 'sine';
+              clinkOsc.frequency.setValueAtTime(1500 + Math.random() * 1000, this.ctx.currentTime);
+              
+              clinkGain.gain.setValueAtTime(0.005 * volume, this.ctx.currentTime);
+              clinkGain.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + 0.15);
+              
+              clinkOsc.connect(clinkGain);
+              clinkGain.connect(this.ctx.destination);
+              clinkOsc.start();
+              clinkOsc.stop(this.ctx.currentTime + 0.2);
+            }
+          }, 3000 + Math.random() * 4000);
+        }
+        else if (type === 'lofi') {
+          // Lo-Fi: LFO-modulated low frequency humming (analog vibe) + soft electric piano chord sequence
+          this.filterNode.type = 'lowpass';
+          this.filterNode.frequency.setValueAtTime(400, this.ctx.currentTime);
+          
+          this.noiseNode.connect(this.filterNode);
+          this.filterNode.connect(this.gainNode);
+          this.gainNode.connect(this.ctx.destination);
+          this.noiseNode.start();
+
+          // Let's generate a simple, beautiful repeating Lofi chord progression!
+          const chords = [
+            [261.63, 329.63, 392.00, 493.88], // Cmaj7
+            [349.23, 440.00, 523.25, 659.25], // Fmaj7
+            [293.66, 349.23, 440.00, 587.33], // Dm7
+            [392.00, 493.88, 587.33, 739.99]  // G7
+          ];
+          let chordIndex = 0;
+          
+          const playLofiChord = () => {
+            if (!this.gainNode || this.playingType !== 'lofi') return;
+            const currentChord = chords[chordIndex];
+            const oscList = [];
+            const chordGainNode = this.ctx.createGain();
+            
+            chordGainNode.gain.setValueAtTime(0.02 * volume, this.ctx.currentTime);
+            chordGainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 3.8);
+            chordGainNode.connect(this.ctx.destination);
+
+            currentChord.forEach(freq => {
+              const osc = this.ctx.createOscillator();
+              osc.type = 'triangle'; // Smooth mellow sound
+              osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+              osc.connect(chordGainNode);
+              osc.start();
+              oscList.push(osc);
+            });
+
+            // Stop oscs after 4s
+            setTimeout(() => {
+              oscList.forEach(o => { try { o.stop(); } catch(e) {} });
+            }, 4000);
+
+            chordIndex = (chordIndex + 1) % chords.length;
+          };
+
+          playLofiChord();
+          this.lofiInterval = setInterval(playLofiChord, 4000);
+        }
+      }
+
+      stop() {
+        if (this.patterInterval) clearInterval(this.patterInterval);
+        if (this.clinkInterval) clearInterval(this.clinkInterval);
+        if (this.lofiInterval) clearInterval(this.lofiInterval);
+        
+        if (this.noiseNode) {
+          try { this.noiseNode.stop(); } catch(e) {}
+          this.noiseNode = null;
+        }
+        this.filterNode = null;
+        this.gainNode = null;
+        this.playingType = null;
+      }
+    }
+
+    // Attach to window so app.js can use it
+    window.focusAudio = new FocusAudioSynthesizer();
+  </script>
+  
+  <!-- Core Application Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
